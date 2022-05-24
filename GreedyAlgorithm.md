@@ -95,3 +95,27 @@ class Solution {
 }
 ```
 #### One Array loop two times
+
+```
+class Solution {
+    public int candy(int[] ratings) {
+        //number of candies
+        int[] candies = new int[ratings.length];
+        // because each child has minimum 1 candy
+        Arrays.fill(candies, 1);
+        
+        // go from left to right, compare to left variable
+        for (int i=1; i<ratings.length; i++) {
+            if (ratings[i]>ratings[i-1] && candies[i]<=candies[i-1]) candies[i] = candies[i-1] + 1;
+        }
+        
+        // go from right to left, compare to right variable
+        for (int i=ratings.length-2; i>=0; i--) {
+            if (ratings[i]>ratings[i+1] && candies[i]<=candies[i+1]) candies[i] = candies[i+1] + 1;
+        }
+        
+        return Arrays.stream(candies).sum();
+    }
+}
+```
+
