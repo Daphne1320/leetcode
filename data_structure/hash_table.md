@@ -24,3 +24,24 @@ class Solution {
 }
 ```
 #### Use Hash Table (Time complexity n)
+Time Complexity:n => tranverse array only once, each loopup in hashmap take 1.
+Space Complexity:n=> save at most n elements in hashmap.
+```
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        HashMap<Integer, Integer> numbers = new HashMap<Integer, Integer>();
+        
+        // put values in nums into hashtable
+        for (int idx=0; idx<nums.length; idx++) {
+            int rest = target - nums[idx];
+            int value = nums[idx];
+            
+            if (numbers.get(value)!=null) return new int[]{numbers.get(value),idx};
+            
+            numbers.put(rest, idx);
+        }
+        // if no solution
+        return new int[] {-1,-1};
+    }
+}
+```
