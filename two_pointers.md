@@ -222,3 +222,95 @@ public class Solution {
     }
 }
 ```
+
+# 76. Minimum Window Substring
+## Problem (Hard):
+Given two strings s and t of lengths m and n respectively, return the minimum window substring of s such that every character in t (including duplicates) is included in the window. If there is no such substring, return the empty string "".
+
+The testcases will be generated such that the answer is unique.
+
+A substring is a contiguous sequence of characters within the string.
+
+```
+Input: s = "ADOBECODEBANC", t = "ABC"
+Output: "BANC"
+Explanation: The minimum window substring "BANC" includes 'A', 'B', and 'C' from string t.
+```
+### Notes: 
+Too hard for me. Copied answers from solution Approach 1. Suggest do it again after a while.
+## Solution:
+### Brute Force:
+Loop String s from first letter: find the minimum length, which contains string t, and store the length & idx of this letter in hashmap (length as key and idx as value). Then check hashmap.contains(key) from 1 til length of s and find the first available key in hashmap. 
+Time Complexity: O(n^2) because loop string s two times
+Space Complexity: O(n) hashmap takes O(n) space.
+
+### Two Pointers => sliding window method
+
+Complexity Analysis
+
+Time Complexity: O(|S| + |T|)O(∣S∣+∣T∣) where |S| and |T| represent the lengths of strings SS and TT. In the worst case we might end up visiting every element of string SS twice, once by left pointer and once by right pointer. |T|∣T∣ represents the length of string TT.
+
+Space Complexity: O(|S| + |T|)O(∣S∣+∣T∣). |S|∣S∣ when the window size is equal to the entire string SS. |T|∣T∣ when TT has all unique characters.
+
+```
+class Solution {
+    public String minWindow(String s, String t) {
+        // use two pointers
+        int right = 0;
+        int left = 0;
+        // one hashmap for t
+        HashMap<Character, Integer> dictT = new HashMap<Character, Integer>();
+        for(int i = 0; i<t.length(); i++) {
+            int count = dictT.getOrDefault(t.charAt(i), 0);
+            dictT.put(t.charAt(i), count+1);
+        }
+        // required number of unique characteres in t
+        int required = dictT.size();
+        
+        // one hashmap for s to keeps a count of all the unique characters in the current window
+        HashMap<Character, Integer> countS = new HashMap<Character, Integer>();
+        
+        // formed is used to keep track of how many unique characters in t
+        // are present in the current window in its desired frequency.
+        // e.g. if t is "AABC" then the window must have two A's, one B and one C.
+        // Thus formed would be = 3 when all these conditions are met.
+        int formed = 0;
+        
+        // array to store position and length of current minimum window
+        int[] result = {-1,0,0};
+        
+        while(right < s.length()) {
+            char rightChar = s.charAt(right);
+            int count = countS.getOrDefault(rightChar, 0);
+            countS.put(rightChar, count+1);
+            
+            if (dictT.containsKey(rightChar) && countS.get(rightChar).intValue() == dictT.get(rightChar).intValue()) {
+                formed ++;
+            }
+            
+            // move left pointer in right direction til current window donot contains all t anymore
+            while(left <= right && formed == required) {
+                // save the samllest result
+                if (right-left+1<result[0]|| result[0] == -1) {
+                    result[0] = right-left+1;
+                    result[1] = left;
+                    result[2] = right;
+                }
+                
+                //move left pointer one step right
+                char leftChar = s.charAt(left);
+                countS.put(leftChar, countS.get(leftChar)-1);
+                if (dictT.containsKey(leftChar) && countS.get(leftChar).intValue() < dictT.get(leftChar).intValue()) {
+                    formed --;
+                }
+                
+                left++;      
+            }
+            right++;
+        }
+        
+        return result[0] == -1 ? "" : s.substring(result[1], result[2]+1);
+        
+    }
+}
+```
