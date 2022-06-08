@@ -119,3 +119,77 @@ class Solution {
 }
 ```
 
+# 435. Non-overlapping Intervals
+## Problem (Medium):
+Given an array of intervals intervals where intervals[i] = [starti, endi], return the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping.
+
+```
+Input: intervals = [[1,2],[2,3],[3,4],[1,3]]
+Output: 1
+Explanation: [1,3] can be removed and the rest of the intervals are non-overlapping.
+```
+## Solution:
+### BruteForce:
+Calcualte all combinations of intervals, then check whether each combination contains overlapping intervals. Get the combination which has no overlapp and max. number.
+
+Time Complexity: O(2^n), for n elements, the total number of all combinations are 2^n.
+Space Complexity: depends on which method is used.
+
+Not implemented, because too complex.
+
+### GreedyAlgorithm
+There are actually two kinds of method using greedy algorithm. One is sort the intervals by start point, the second is sort intervals by end point. Both are similar, key point is always select the smaller end to get more space for remaining intervals. 
+
+Here implements sort by start method.
+
+Notes:
+1. user Comparator to sort arrays.
+2. move current pointer directly to next pointer. Dont use current ++. Becaues, it is possible next element of current is already skipped by next pointer. 
+
+```
+class Solution {
+    // Greedy Algorithm
+    // sort start point
+    class MyComparator implements Comparator<int[]> {
+        @Override
+        public int compare(int[]a, int[]b) {
+            return a[0] - b[0];
+        }
+    }
+    
+    public int eraseOverlapIntervals(int[][] intervals) {
+        MyComparator comparator = new MyComparator();
+        
+        Arrays.sort(intervals, comparator);
+        
+        // go through the array to find out which intervals will be removed
+        int count = 0;
+        int current = 0;
+        int next = 1;
+        while(current<intervals.length && next<intervals.length) {
+            // case1: current interval has no intersection with next
+            // end of current is smaller or equal to start of next
+            if(intervals[current][1]<=intervals[next][0]) {
+                current=next;
+                next++;
+            }
+            // case2: current interval has intersection, next has smaller end, select next, remove current
+            // end of current is bigger to start of next, end of next is smaller or equal to end of current
+            else if (intervals[next][1]<=intervals[current][1]) {
+                current=next;
+                next++;
+                count++;
+            } else {
+                // case3: current interval has interseciotn, next has larger end, select current, remove next
+                next++;
+                count++;
+            }
+            
+        }
+        return count;
+    }
+}
+```
+
+### DP based on starting/ending point. 
+TODO, as DP is not learned yet. 
