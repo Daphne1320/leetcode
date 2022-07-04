@@ -116,3 +116,129 @@ class Solution {
     }
 }
 ```
+
+# 528. Random Pick with Weight
+## Problem (Mediun):
+You are given a 0-indexed array of positive integers w where w[i] describes the weight of the ith index.
+
+You need to implement the function pickIndex(), which randomly picks an index in the range [0, w.length - 1] (inclusive) and returns it. The probability of picking an index i is w[i] / sum(w).
+
+For example, if w = [1, 3], the probability of picking index 0 is 1 / (1 + 3) = 0.25 (i.e., 25%), and the probability of picking index 1 is 3 / (1 + 3) = 0.75 (i.e., 75%).
+```
+Input
+["Solution","pickIndex","pickIndex","pickIndex","pickIndex","pickIndex"]
+[[[1,3]],[],[],[],[],[]]
+Output
+[null,1,1,1,1,0]
+
+Explanation
+Solution solution = new Solution([1, 3]);
+solution.pickIndex(); // return 1. It is returning the second element (index = 1) that has a probability of 3/4.
+solution.pickIndex(); // return 1
+solution.pickIndex(); // return 1
+solution.pickIndex(); // return 1
+solution.pickIndex(); // return 0. It is returning the first element (index = 0) that has a probability of 1/4.
+
+Since this is a randomization problem, multiple answers are allowed.
+All of the following outputs can be considered correct:
+[null,1,1,1,1,0]
+[null,1,1,1,1,1]
+[null,1,1,1,0,0]
+[null,1,1,1,0,1]
+[null,1,0,1,0,0]
+......
+and so on.
+```
+## Solution:
+### Brute Force:
+We sum up all weights together, then create one array with length of this sum-up. We go through input array, for i'th weight w, put w of i (index) in the array. We get one random number num of [1, sum-up], and find value at position of num in the new array. It is our output. Problem is this method takes too much space. 
+
+### Prefix Sums with Linear Search:
+Based on concept of brute force method, we can try to find one solution that don't need created one array with sum-up length, but we can still find right index. Prefix sums can be used here. For each i position, all values in smaller and equal to i position will be added up and saved in i position. 
+
+Select one random value between 1 and sum-up, because we donnot have 0 weight.
+
+Find the first element in new array greater or equal to random value. Return the index.
+
+Time Complexity: $\Omicron(N)$ for construction of prefix-sum, $\Omicron(N)$ for pickIndex().
+
+Space Complexity: $\Omicron(N)$ for construction of prefix-sum,  $\Omicron(1)$ for pickIndex().
+
+```
+class Solution {
+    int[] prefixSum;
+    int len;
+    
+    public Solution(int[] w) {
+        this.len = w.length;
+        this.prefixSum = new int[len];
+        prefixSum[0] = w[0];
+        for (int i=1; i<len; i++) {
+            prefixSum[i] = prefixSum[i-1] + w[i];
+        }
+    }
+    
+    public int pickIndex() {
+        // find the first number larger or equal to selected values
+        Random rndm = new Random();
+        // there is no weight of 0, therefore, we get random from [1, max]
+        int selected = rndm.nextInt(prefixSum[len-1]) + 1; 
+        for (int i=0; i<len; i++) {
+            if (prefixSum[i]>=selected) {
+                return i;
+            }
+        }
+        return 0;
+    }
+}
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution obj = new Solution(w);
+ * int param_1 = obj.pickIndex();
+ */
+```
+### Prefix Sums with Binary Search:
+Time Complexity: $\Omicron(N)$ for construction of prefix-sum, $\Omicron(logN)$ for pickIndex().
+
+Space Complexity: $\Omicron(N)$ for construction of prefix-sum,  $\Omicron(1)$ for pickIndex().
+
+```
+class Solution {
+    int[] prefixSum;
+    int len;
+    
+    public Solution(int[] w) {
+        this.len = w.length;
+        this.prefixSum = new int[len];
+        prefixSum[0] = w[0];
+        for (int i=1; i<len; i++) {
+            prefixSum[i] = prefixSum[i-1] + w[i];
+        }
+    }
+    
+    public int pickIndex() {
+        // find the first number larger or equal to selected values
+        Random rndm = new Random();
+        // there is no weight of 0, therefore, we get random from [1, max]
+        int selected = rndm.nextInt(prefixSum[len-1]) + 1;
+        int left = 0;
+        int right = len-1;
+        while (left<=right) {
+            int mid = left + (right-left)/2;
+            if (prefixSum[mid]>=selected) {
+                right = mid-1;
+            } else {
+                left = mid+1;
+            }
+        }
+        return right+1;
+    }
+}
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution obj = new Solution(w);
+ * int param_1 = obj.pickIndex();
+ */
+```
