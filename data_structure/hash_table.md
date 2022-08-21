@@ -82,11 +82,12 @@ class Solution {
 Time Complexity: $\Omicron(n^2)$ <br />
 Space Complexity: $\Omicron(1)$ <br />
 
-### Hashmap (Tricky!!!)
+### Prefix Sum Hashmap (Tricky!!!)
 * $sum[i] = sum[i] - sum[0]$
 * $sum[i] - sum[j] = k$ refers to the sum-up of array from index i till index j.
 * Therefore, if $sum[j] = sum[i] - k$ is available, there is one index pair $i, j$ exist for sum-up == k. 
 * Similar as Two-Sum Leetcode problem, we can use hashmap to check if $sum[j]$ is available in our database.
+* Check tree version with LeetCode 437.
 
 Note:
 * Init pair (0,1) should be added in hashmap for case  $sum[i] = k$
